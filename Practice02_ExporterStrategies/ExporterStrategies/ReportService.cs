@@ -1,16 +1,32 @@
 namespace ExporterStrategies;
+
 public sealed class ReportService
 {
-    private readonly IReportExporter _exporter;
-    public ReportService(IReportExporter exporter)
+    private const string DailySummaryTitle = "Сводка за день";
+
+    private readonly IReportExporter _reportExporter;
+
+    public ReportService(IReportExporter reportExporter)
     {
-        // TODO 1: Проверьте обязательную зависимость.
-        _exporter = exporter;
+        ArgumentNullException.ThrowIfNull(reportExporter);
+
+        _reportExporter = reportExporter;
     }
+
     public void PublishDailySummary(int totalJobs, int failedJobs)
     {
-        // TODO 2: Бизнес-логика формирует документ, но не знает способ экспорта.
-        var body = $"Всего задач: {totalJobs}\nОшибок: {failedJobs}";
-        _exporter.Export(new ReportDocument("Сводка за день", body));
+        ArgumentOutOfRangeException.ThrowIfNegative(totalJobs);
+        ArgumentOutOfRangeException.ThrowIfNegative(failedJobs);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(failedJobs, totalJobs);
+
+        string dailySummaryBody = BuildDailySummaryBody(totalJobs, failedJobs);
+        ReportDocument dailySummaryDocument = new ReportDocument(DailySummaryTitle, dailySummaryBody);
+
+        _reportExporter.Export(dailySummaryDocument);
+    }
+
+    private static string BuildDailySummaryBody(int totalJobs, int failedJobs)
+    {
+        return $"Всего задач: {totalJobs}\nОшибок: {failedJobs}";
     }
 }
