@@ -1,2 +1,6 @@
 namespace ExporterStrategies;
-public interface IReportExporter { void Export(ReportDocument document); }
+
+public interface IReportExporter
+{
+    void Export(ReportDocument document);
+}
