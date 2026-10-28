@@ -1,11 +1,23 @@
 namespace ExporterStrategies;
+
 public sealed class LegacyReportAdapter : IReportExporter
 {
-    private readonly LegacyReportPrinter _printer;
-    public LegacyReportAdapter(LegacyReportPrinter printer) => _printer = printer;
+    private readonly LegacyReportPrinter _legacyReportPrinter;
+
+    public LegacyReportAdapter(LegacyReportPrinter legacyReportPrinter)
+    {
+        ArgumentNullException.ThrowIfNull(legacyReportPrinter);
+
+        _legacyReportPrinter = legacyReportPrinter;
+    }
+
     public void Export(ReportDocument document)
     {
-        // TODO 3: Согласуйте проверку входных данных с контрактом второго экспортёра.
-        _printer.PrintReport(document.Title, document.Body);
+        ReportDocumentValidator.EnsureIsExportable(document);
+
+        string legacyReportTitle = document.Title;
+        string legacyReportText = document.Body;
+
+        _legacyReportPrinter.PrintReport(legacyReportTitle, legacyReportText);
     }
 }
